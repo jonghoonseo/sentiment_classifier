@@ -6,7 +6,7 @@ from absl.testing import flagsaver
 from absl.testing import parameterized
 # see, https://github.com/abseil/abseil-py/blob/master/absl/testing/parameterized.py
 
-from sentiment_classifier.dataset import shakespeare
+from dataset import shakespeare
 
 
 class TestShakespeareDataset(absltest.TestCase):
