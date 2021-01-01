@@ -1,6 +1,7 @@
 """Shakespere dataset"""
 
 import os
+import typing
 
 import numpy as np
 import tensorflow as tf
@@ -25,7 +26,26 @@ def _encode(char_array, dictionary: dict):
     return [dictionary[char] for char in char_array]
 
 
-def get_dataset(cache_dir=None, seq_length=100):
+class DatasetConfig(typing.NamedTuple):
+    """Dataset Configurations"""
+    seq_length: int = 100
+    batch_size: int = 64
+    suffle_buffer: int = 1000
+
+
+def get_dataset(cache_dir=None, conf=DatasetConfig()):
+    """Create dataset
+
+    Args:
+        cache_dir: a cache directory path to store
+            (or pass if it is already exist) dataset file
+        conf: a DatasetConfig instance
+
+    Returns:
+        a dataset which contains two tensors
+        The first is 'input' tensor, and the second is 'target' tensor.
+        Both of them has (batch, seq_len) size
+    """
     corpus_path = _download_corpus(cache_dir)
 
     text = ''
@@ -36,9 +56,18 @@ def get_dataset(cache_dir=None, seq_length=100):
     dictionaries = _make_dictionary(text)
     encoded = _encode(text, dictionaries[0])
 
-    # (1)
+    # make a dataset: (1)
     dataset = tf.data.Dataset.from_tensor_slices(encoded)
-    for i in dataset.take(5):
-        print(i.numpy())
+    # make sequence: (seq_len+1)
+    dataset = dataset.batch(conf.seq_length + 1, drop_remainder=True)
 
-    #
+    def split(data):
+        return data[:-1], data[1:]
+
+    # split input and target: (seq_len), (seq_len)
+    dataset = dataset.map(split)
+
+    # batching: (batch, seq_len), (batch, seq_len)
+    dataset = dataset.shuffle(conf.suffle_buffer).batch(conf.batch_size,
+                                                        drop_remainder=True)
+    return dataset

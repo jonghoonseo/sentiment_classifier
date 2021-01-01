@@ -1,9 +1,10 @@
-load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
 load("@third_party_py_requirements//:requirements.bzl", "requirement")
 
 py_library(
     name = "shakespeare",
     srcs = ["shakespeare.py"],
+    visibility = ["//visibility:public"],
     deps = [
         requirement("numpy"),
         requirement("tensorflow"),

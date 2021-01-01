@@ -1,5 +1,7 @@
 """Unit test for Shakespere dataset"""
+from unittest import mock
 
+from absl import logging
 from absl.testing import absltest
 from absl.testing import flagsaver
 # see, https://github.com/abseil/abseil-py/blob/master/absl/testing/flagsaver.py
@@ -38,10 +40,7 @@ class TestShakespeareDataset(absltest.TestCase):
     def test_get_dataset(self):
         """Test for get_dataset"""
         shakespeare.get_dataset()
-        self.assertTrue(True)
-
-    def tearDown(self):
-        pass
+        self.assertTrue(False)
 
 
 if __name__ == '__main__':
